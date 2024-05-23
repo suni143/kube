@@ -1,0 +1,312 @@
+from pyspark.sql import SparkSession
+from pyspark.sql.types import StructType, StructField, IntegerType, StringType, DoubleType
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("DataFrameWithSchema").getOrCreate()
+
+# Define the schema
+schema = StructType([
+    StructField("col1", IntegerType(), nullable=True),
+    StructField("col2", StringType(), nullable=True),
+    StructField("col3", DoubleType(), nullable=True),
+    StructField("col4", DoubleType(), nullable=True),
+    StructField("col5", StringType(), nullable=True)
+])
+
+# Define some sample data
+data = [
+    (1, 'a', 10.5, None, 'foo'),
+    (2, 'b', None, 20.5, 'bar'),
+    (None, 'c', 30.5, 40.5, None),
+    (4, None, 40.5, 50.5, 'baz'),
+    (5, 'e', 50.5, 60.5, 'qux')
+]
+
+# Create DataFrame with defined schema
+df = spark.createDataFrame(data, schema=schema)
+
+# Show DataFrame
+df.show()
+
+from pyspark.sql import SparkSession
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("JoinExample").getOrCreate()
+
+# Sample data for left DataFrame
+data_left = [("Alice", 34, "London"),
+             ("Bob", 45, "New York"),
+             ("Charlie", 26, "Paris"),
+             ("David", 30, "Tokyo")]
+
+# Sample data for right DataFrame
+data_right = [("Alice", "Engineer"),
+              ("Bob", "Doctor"),
+              ("Eve", "Artist")]
+
+# Create DataFrames
+columns_left = ["Name", "Age", "City"]
+columns_right = ["Name", "Profession"]
+
+df_left = spark.createDataFrame(data_left, columns_left)
+df_right = spark.createDataFrame(data_right, columns_right)
+
+# Perform various types of joins
+inner_join = df_left.join(df_right, "Name", "inner")
+left_join = df_left.join(df_right, "Name", "left")
+right_join = df_left.join(df_right, "Name", "right")
+outer_join = df_left.join(df_right, "Name", "outer")
+
+# Show the results
+print("Inner Join:")
+inner_join.show()
+
+print("Left Join:")
+left_join.show()
+
+print("Right Join:")
+right_join.show()
+
+print("Outer Join:")
+outer_join.show()
+
+from pyspark.sql import SparkSession
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("JoinExample").getOrCreate()
+
+# Sample data for left DataFrame
+data_left = [("Alice", 34, "London"),
+             ("Bob", 45, "New York"),
+             ("Charlie", 26, "Paris"),
+             ("David", 30, "Tokyo")]
+
+# Sample data for right DataFrame
+data_right = [("Alice", "Engineer"),
+              ("Bob", "Doctor"),
+              ("Eve", "Artist")]
+
+# Create DataFrames
+columns_left = ["Name", "Age", "City"]
+columns_right = ["Name", "Profession"]
+
+df_left = spark.createDataFrame(data_left, columns_left)
+df_right = spark.createDataFrame(data_right, columns_right)
+
+# Perform various types of joins
+inner_join = df_left.join(df_right, "Name", "inner")
+left_join = df_left.join(df_right, "Name", "left")
+right_join = df_left.join(df_right, "Name", "right")
+outer_join = df_left.join(df_right, "Name", "outer")
+
+# Show the results
+print("Inner Join:")
+inner_join.show()
+
+print("Left Join:")
+left_join.show()
+
+print("Right Join:")
+right_join.show()
+
+print("Outer Join:")
+outer_join.show()
+
+from pyspark.sql import SparkSession
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("UnionExample").getOrCreate()
+
+# Sample data for the first DataFrame
+data1 = [("Alice", 34, "London"),
+         ("Bob", 45, "New York")]
+
+# Sample data for the second DataFrame
+data2 = [("Charlie", 26, "Paris"),
+         ("David", 30, "Tokyo")]
+
+# Create DataFrames
+columns = ["Name", "Age", "City"]
+df1 = spark.createDataFrame(data1, columns)
+df2 = spark.createDataFrame(data2, columns)
+
+# Perform union operation
+df_union = df1.union(df2)
+df_unionall = df1.unionAll(df2)
+
+# Show the result
+df_union.show()
+df_unionall.show()
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col, sum, avg, max
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("AggregateFunctionsExample").getOrCreate()
+
+# Sample data
+data = [
+    ("Alice", 34, "London", 1000),
+    ("Bob", 45, "New York", 2000),
+    ("Alice", 26, "Paris", 3000),
+    ("Bob", 30, "Tokyo", 4000),
+    ("Charlie", 40, "London", 5000)
+]
+
+# Create DataFrame
+columns = ["Name", "Age", "City", "Salary"]
+df = spark.createDataFrame(data, columns)
+
+# Use aggregate functions
+agg_result = df.groupBy("Name").agg(
+    sum("Salary").alias("TotalSalary"),
+
+    avg("Age").alias("AverageAge"),
+    max("Salary").alias("MaxSalary")
+)
+
+# Show the result
+agg_result.show()
+
+from pyspark.sql import SparkSession
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("DistinctExample").getOrCreate()
+
+# Sample data
+data = [
+    ("Alice", 34, "London"),
+    ("Bob", 45, "New York"),
+    ("Alice", 34, "London"),  # Duplicate row
+    ("Charlie", 26, "Paris"),
+    ("Bob", 45, "New York"),   # Duplicate row
+    ("David", 30, "Tokyo")
+]
+
+# Create DataFrame
+columns = ["Name", "Age", "City"]
+df = spark.createDataFrame(data, columns)
+
+# Apply distinct function
+df_distinct = df.distinct()
+
+# Show the result
+df_distinct.show()
+from pyspark.sql import SparkSession
+from pyspark.sql.window import Window
+from pyspark.sql.functions import col, row_number, rank, dense_rank
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("WindowFunctionsExample").getOrCreate()
+
+# Sample data
+data = [
+    ("Alice", 34, "London", 1000),
+    ("Bob", 45, "New York", 2000),
+    ("Alice", 26, "Paris", 3000),
+    ("Bob", 30, "Tokyo", 4000),
+    ("Charlie", 40, "London", 5000)
+]
+
+# Create DataFrame
+columns = ["Name", "Age", "City", "Salary"]
+df = spark.createDataFrame(data, columns)
+
+# Define a window specification
+window_spec = Window.partitionBy("City").orderBy(col("Salary").desc())
+print(window_spec)
+
+# Use window functions
+df_with_window = df.withColumn("row_number", row_number().over(window_spec)) \
+                   .withColumn("rank", rank().over(window_spec)) \
+                   .withColumn("dense_rank", dense_rank().over(window_spec))
+
+# Show the result
+df_with_window.show()
+
+from pyspark.sql import SparkSession
+
+# Initialize Spark session
+spark = SparkSession.builder.appName("SecondHighestSalary").getOrCreate()
+
+# Sample data
+data = [
+    ("Alice", 34, "London", 1000),
+    ("Bob", 45, "New York", 2000),
+    ("Alice", 26, "Paris", 3000),
+    ("Bob", 30, "Tokyo", 4000),
+    ("Charlie", 40, "London", 5000)
+]
+
+# Create DataFrame
+columns = ["Name", "Age", "City", "Salary"]
+df = spark.createDataFrame(data, columns)
+
+# Group by City and compute maximum salary for each group
+max_salary_df = df.groupBy("City").agg({"Salary": "max"})
+
+# Filter rows where salary is equal to maximum salary for each group
+second_highest_salary_df = df.join(max_salary_df, (df["City"] == max_salary_df["City"]) & (df["Salary"] != max_salary_df["max(Salary)"]))
+
+# Sort the DataFrame in descending order of salary
+sorted_df = second_highest_salary_df.orderBy("Salary", ascending=False)
+
+# Select the second row (2nd highest salary)
+second_highest_salary = sorted_df.head(2)[-1]
+
+# Extract the maximum salary from the second row
+second_highest_salary_value = second_highest_salary["Salary"]
+
+print("Second highest salary:", second_highest_salary_value)
+from pyspark.sql import SparkSession
+
+# Initialize SparkSession
+spark = SparkSession.builder \
+    .appName("example") \
+    .getOrCreate()
+
+# Data
+simpleData = [("James","Sales","NY",90000,34,10000),
+    ("Michael","Sales","NY",86000,56,20000),
+    ("Robert","Sales","CA",81000,30,23000),
+    ("Maria","Finance","CA",90000,24,23000),
+    ("Raman","Finance","CA",99000,40,24000),
+    ("Scott","Finance","NY",83000,36,19000),
+    ("Jen","Finance","NY",79000,53,15000),
+    ("Jeff","Marketing","CA",80000,25,18000),
+    ("Kumar","Marketing","NY",91000,50,21000)
+  ]
+
+# Create DataFrame
+schema = ["employee_name","department","state","salary","age","bonus"]
+df = spark.createDataFrame(data=simpleData, schema = schema)
+df.printSchema()
+df.show(truncate=False)
+from pyspark.sql import SparkSession
+from pyspark.sql.functions import col
+
+# Initialize SparkSession
+spark = SparkSession.builder \
+    .appName("FindThirdHighestSalary") \
+    .getOrCreate()
+
+# Sample data
+simpleData = [
+    ("James","Sales","NY",90000,34,10000),
+    ("Michael","Sales","NY",86000,56,20000),
+    ("Robert","Sales","CA",81000,30,23000),
+    ("Maria","Finance","CA",90000,24,23000),
+    ("Raman","Finance","CA",99000,40,24000),
+    ("Scott","Finance","NY",83000,36,19000),
+    ("Jen","Finance","NY",79000,53,15000),
+    ("Jeff","Marketing","CA",80000,25,18000),
+    ("Kumar","Marketing","NY",91000,50,21000)
+]
+
+# Create DataFrame
+schema = ["employee_name","department","state","salary","age","bonus"]
+df = spark.createDataFrame(data=simpleData, schema=schema)
+
+# Find the third highest salary person
+third_highest_salary_person = df.orderBy(col("salary").desc()).select("employee_name").limit(1).collect()[2][0]
+
+print("Third highest salary person:", third_highest_salary_person)
